@@ -27,8 +27,7 @@ const car = {
     deceleration: 0.1,
     maxSpeed: 7,
     friction: 0.96,
-    steer: 0.06,
-    handbrake: 0.85 // Extra friction when space is pressed
+    steer: 0.06
 };
 
 const keys = {};
@@ -36,61 +35,57 @@ window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
 window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
 function update() {
-    // Gas and Brake (WASD)
+    // RESET BUTTON: Press 'R' to bring the car back to center
+    if (keys["r"]) {
+        car.x = 400;
+        car.y = 300;
+        car.speed = 0;
+        car.angle = 0;
+    }
+
     if (keys["w"]) car.speed += car.acceleration;
     if (keys["s"]) car.speed -= car.deceleration;
 
-    // Handbrake (Space)
-    if (keys[" "]) {
-        car.speed *= car.handbrake;
-    }
-
-    // Applying Friction & Speed Caps
     car.speed *= car.friction;
-    if (Math.abs(car.speed) > car.maxSpeed) car.speed = car.maxSpeed * Math.sign(car.speed);
     if (Math.abs(car.speed) < 0.1) car.speed = 0;
 
-    // Steering logic (A and D)
     if (car.speed !== 0) {
-        // This ensures steering direction reverses when backing up
         const direction = car.speed > 0 ? 1 : -1;
-        
-        // Steering is more sensitive at medium speeds, harder at high speeds
-        const steeringFactor = Math.abs(car.speed) / car.maxSpeed;
-
+        const steeringFactor = Math.min(Math.abs(car.speed) / 2, 1); 
         if (keys["a"]) car.angle -= car.steer * direction * steeringFactor;
         if (keys["d"]) car.angle += car.steer * direction * steeringFactor;
     }
 
-    // Position Update based on Angle
     car.x += Math.cos(car.angle) * car.speed;
     car.y += Math.sin(car.angle) * car.speed;
 
-    // Screen Wrap (Keep car on screen)
-    if (car.x > canvas.width) car.x = 0;
-    if (car.x < 0) car.x = canvas.width;
-    if (car.y > canvas.height) car.y = 0;
-    if (car.y < 0) car.y = canvas.height;
+    // Fixed Screen Wrap Logic
+    if (car.x > canvas.width + 50) car.x = -50;
+    if (car.x < -50) car.x = canvas.width + 50;
+    if (car.y > canvas.height + 50) car.y = -50;
+    if (car.y < -50) car.y = canvas.height + 50;
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Draw Debug Info (Top Left)
+    ctx.fillStyle = "white";
+    ctx.font = "16px Arial";
+    ctx.fillText(`Speed: ${car.speed.toFixed(2)}`, 10, 20);
+    ctx.fillText(`Pos: ${Math.round(car.x)}, ${Math.round(car.y)}`, 10, 40);
+    ctx.fillText(`Press 'R' to Reset`, 10, 60);
+
     ctx.save();
     ctx.translate(car.x, car.y);
     ctx.rotate(car.angle);
     
-    // Car Shadow
-    ctx.fillStyle = "rgba(0,0,0,0.3)";
-    ctx.fillRect(-car.height / 2 + 5, -car.width / 2 + 5, car.height, car.width);
-
-    // Car Body
-    ctx.fillStyle = "#e74c3c"; // Racing Red
+    // Body
+    ctx.fillStyle = "red";
     ctx.fillRect(-car.height / 2, -car.width / 2, car.height, car.width);
-    
-    // Front Windshield (to tell which way is forward)
-    ctx.fillStyle = "#34495e";
-    ctx.fillRect(car.height / 8, -car.width / 2 + 5, car.height / 4, car.width - 10);
+    // Front highlight
+    ctx.fillStyle = "white";
+    ctx.fillRect(car.height / 4, -car.width / 2, 10, car.width);
     
     ctx.restore();
 }
@@ -100,13 +95,6 @@ function loop() {
     draw();
     requestAnimationFrame(loop);
 }
-
-loop();
-    update();
-    draw();
-    requestAnimationFrame(loop);
-}
-
 loop();
 </script>
 </body>
