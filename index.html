@@ -11,8 +11,10 @@
         <div class="modal-content">
             <h1>Driver Login</h1>
             <input type="email" id="emailInput" placeholder="Enter Email" autocomplete="off">
+            <div style="margin-bottom: 15px; font-size: 14px;">
+                <input type="checkbox" id="rememberMe" style="width: auto; margin: 0;"> Remember Me
+            </div>
             <button class="main-btn" onclick="login()">Login / Sign Up</button>
-            <p style="font-size: 10px; color: #555; margin-top: 20px;">Use T to panic (only while driving)</p>
         </div>
     </div>
 
@@ -21,7 +23,7 @@
             <h1>Select Save Slot</h1>
             <p id="userWelcome"></p>
             <div id="slotContainer"></div>
-            <button class="close-btn" onclick="logout()">Logout</button>
+            <button class="close-btn" onclick="logout()">Logout / Change Account</button>
         </div>
     </div>
 
@@ -34,8 +36,10 @@
     </div>
 
     <div id="bustedScreen" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="border-color: #e74c3c;">
             <h1 style="color:#e74c3c">BUSTED!</h1>
+            <p>The police caught you.</p>
+            <p>Fine: $100</p>
             <button class="main-btn" onclick="resetGame()">Pay Fine & Restart</button>
         </div>
     </div>
@@ -46,6 +50,27 @@
         <button id="dealershipBtn" class="main-btn">🏎️ DEALERSHIP</button>
         <button id="shopBtn" class="main-btn">🔧 UPGRADES</button>
         <button class="main-btn" style="background:#95a5a6" onclick="location.reload()">💾 MENU</button>
+    </div>
+
+    <div id="dealershipMenu" class="modal">
+        <div class="modal-content">
+            <h1>Car Dealership</h1>
+            <p>Your Cash: $<span class="cashDisplay">0</span></p>
+            <div class="item-row"><span>Blue Sportster ($500)</span><button onclick="buyCar('blue', 500, 10, 0.3)">Buy</button></div>
+            <div class="item-row"><span>Green Monster ($750)</span><button onclick="buyCar('forestgreen', 750, 8, 0.5)">Buy</button></div>
+            <div class="item-row"><span>Gold Supercar ($1500)</span><button onclick="buyCar('gold', 1500, 15, 0.6)">Buy</button></div>
+            <button class="close-btn" onclick="closeMenus()">Close</button>
+        </div>
+    </div>
+
+    <div id="shopMenu" class="modal">
+        <div class="modal-content">
+            <h1>Engine Upgrades</h1>
+            <p>Your Cash: $<span class="cashDisplay">0</span></p>
+            <div class="item-row"><span>Top Speed (+2) - $50</span><button onclick="buyUpgrade('speed')">Upgrade</button></div>
+            <div class="item-row"><span>Accel (+0.1) - $50</span><button onclick="buyUpgrade('accel')">Upgrade</button></div>
+            <button class="close-btn" onclick="closeMenus()">Close</button>
+        </div>
     </div>
 
     <canvas id="gameCanvas" style="display:none;"></canvas>
